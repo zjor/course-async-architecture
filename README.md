@@ -8,4 +8,4 @@
 
 ## Architecture
 
-![](docs/images/async-architecture.v0.png)
+![architecture](/docs/images/async-architecture.v0.png)
