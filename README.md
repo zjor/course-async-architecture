@@ -8,4 +8,4 @@
 
 ## Architecture
 
-![architecture](/docs/images/async-architecture.v0.png)
+![architecture](/docs/images/async-architecture-course.v0.png)
