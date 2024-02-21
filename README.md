@@ -1,11 +1,7 @@
 # Async Architecture: UberPopug Inc. aTES
 
-## Services
+## Week 1
 
-- Auth service
-- TaskManager service
-- Accounting service
+### Event Storming Diagram
 
-## Architecture
-
-![architecture](/docs/images/async-architecture-course.v0.png)
+![es](/docs/images/es-week-1.png)
