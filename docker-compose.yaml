@@ -1,0 +1,12 @@
+version: "3"
+services:
+  db:
+    image: postgres:16.1-alpine3.19
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: aa
+      POSTGRES_USER: aa
+      POSTGRES_PASSWORD: s3cr3t
+    volumes:
+      - /var/folders/aa/postgres/data:/var/lib/postgresql/data
