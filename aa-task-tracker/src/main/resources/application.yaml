@@ -1,0 +1,10 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aa
+    username: aa
+    password: s3cr3t
