@@ -1,6 +1,5 @@
 package aa.common.events.auth;
 
-import aa.common.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,22 +12,15 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountCreated {
+public class AccountDeleted {
 
     @Builder.Default
     @JsonProperty("type")
-    private EventType type = EventType.ACCOUNT_CREATED;
+    private EventType type = EventType.ACCOUNT_DELETED;
 
     @JsonProperty("id")
     private long id;
 
-    @JsonProperty("login")
-    private String login;
-
-    @JsonProperty("role")
-    private Role role;
-
-    @JsonProperty("created_at")
-    private Instant createdAt;
-
+    @JsonProperty("deleted_at")
+    private Instant deletedAt;
 }

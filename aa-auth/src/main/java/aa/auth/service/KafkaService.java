@@ -2,6 +2,8 @@ package aa.auth.service;
 
 import aa.auth.model.AuthUser;
 import aa.common.events.auth.AccountCreated;
+import aa.common.events.auth.AccountDeleted;
+import aa.common.events.auth.AccountRoleChanged;
 import aa.common.util.JSON;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -40,6 +42,11 @@ public class KafkaService {
         });
     }
 
+    private void sendAsync(Object obj) {
+        executor.submit(() ->
+                producer.send(new ProducerRecord(topic, JSON.toJson(obj))));
+    }
+
     public void sendAccountCreatedEventAsync(AuthUser user) {
         var event = AccountCreated.builder()
                 .id(user.getId())
@@ -47,16 +54,23 @@ public class KafkaService {
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .build();
-        executor.submit(() ->
-                producer.send(new ProducerRecord(topic, JSON.toJson(event))));
+        sendAsync(event);
     }
 
     public void sendAccountDeletedEventAsync(AuthUser user) {
-
+        var event = AccountDeleted.builder()
+                .id(user.getId())
+                .deletedAt(user.getDeletedAt())
+                .build();
+        sendAsync(event);
     }
 
     public void setAccountRoleChangedEventAsync(AuthUser user) {
-
+        var event = AccountRoleChanged.builder()
+                .id(user.getId())
+                .role(user.getRole())
+                .build();
+        sendAsync(event);
     }
 
 }

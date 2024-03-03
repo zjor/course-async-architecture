@@ -100,6 +100,7 @@ public class AuthController {
         logout(user);
         user.setDeletedAt(Instant.now());
         userRepository.save(user);
+        kafkaService.sendAccountDeletedEventAsync(user);
     }
 
     @PutMapping("role")
@@ -110,6 +111,7 @@ public class AuthController {
     ) {
         user.setRole(req.role());
         userRepository.save(user);
+        kafkaService.setAccountRoleChangedEventAsync(user);
         return ChangeRoleResponse.of(user);
     }
 
