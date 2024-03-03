@@ -72,33 +72,44 @@ public class AuthController {
     @Log
     @GetMapping("verify")
     @SecurityRequirements({@SecurityRequirement(name = SECURITY_REQUIREMENT_JWT)})
-    public Object verify(@AuthenticatedUser AuthUser _user, HttpServletRequest req) {
+    public RegistrationResponse verify(@AuthenticatedUser AuthUser user, HttpServletRequest req) {
         var token = (AuthToken) req.getAttribute(AuthFilter.AUTH_TOKEN_ATTRIBUTE);
         if (token.getExpiredAt().isBefore(Instant.now())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Expired");
         }
-        var claims = tokenService.verify(token);
-        return claims;
+        try {
+            tokenService.verify(token);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Verification failed: " + e.getMessage());
+        }
+        return RegistrationResponse.of(user);
     }
 
     @Log
     @PostMapping("logout")
     @SecurityRequirements({@SecurityRequirement(name = SECURITY_REQUIREMENT_JWT)})
-    public void logout() {
-
+    public void logout(@AuthenticatedUser AuthUser user) {
+        tokenService.expireAll(user);
     }
 
     @Log
     @DeleteMapping("delete")
     @SecurityRequirements({@SecurityRequirement(name = SECURITY_REQUIREMENT_JWT)})
-    public void delete() {
-
+    public void delete(@AuthenticatedUser AuthUser user) {
+        logout(user);
+        user.setDeletedAt(Instant.now());
+        userRepository.save(user);
     }
 
     @PutMapping("role")
     @SecurityRequirements({@SecurityRequirement(name = SECURITY_REQUIREMENT_JWT)})
-    public Object changeRole() {
-        return null;
+    public ChangeRoleResponse changeRole(
+            @AuthenticatedUser AuthUser user,
+            @RequestBody ChangeRoleRequest req
+    ) {
+        user.setRole(req.role());
+        userRepository.save(user);
+        return ChangeRoleResponse.of(user);
     }
 
     public record RegistrationRequest(String login, String password, AuthUser.Role role) {
@@ -114,6 +125,15 @@ public class AuthController {
     }
 
     public record LoginResponse(String token) {
+    }
+
+    public record ChangeRoleRequest(AuthUser.Role role) {
+    }
+
+    public record ChangeRoleResponse(long id, String login, AuthUser.Role role, Instant createdAt) {
+        public static ChangeRoleResponse of(AuthUser u) {
+            return new ChangeRoleResponse(u.getId(), u.getLogin(), u.getRole(), u.getCreatedAt());
+        }
     }
 
 }
