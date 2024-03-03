@@ -1,6 +1,7 @@
 package aa.auth.model;
 
 import aa.common.model.Born;
+import aa.common.model.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -20,13 +21,6 @@ import java.time.Instant;
 @Entity
 @Table(name = "auth_users")
 public class AuthUser extends Born {
-
-    public enum Role {
-        ADMIN,
-        MANAGER,
-        ACCOUNTANT,
-        WORKER
-    }
 
     @Column(name = "login", unique = true, nullable = false)
     private String login;

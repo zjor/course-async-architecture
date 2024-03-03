@@ -4,6 +4,8 @@ import aa.auth.ext.spring.auth.AuthFilter;
 import aa.auth.ext.spring.auth.AuthenticatedUser;
 import aa.auth.model.AuthToken;
 import aa.auth.model.AuthUser;
+import aa.auth.service.KafkaService;
+import aa.common.model.Role;
 import aa.auth.repository.AuthUserRepository;
 import aa.auth.service.AuthTokenService;
 import aa.common.ext.spring.aop.Log;
@@ -29,14 +31,16 @@ import static aa.auth.config.SwaggerConfiguration.SECURITY_REQUIREMENT_JWT;
 public class AuthController {
 
     private final AuthUserRepository userRepository;
-
     private final AuthTokenService tokenService;
+    private final KafkaService kafkaService;
 
     public AuthController(
             AuthUserRepository userRepository,
-            AuthTokenService tokenService) {
+            AuthTokenService tokenService,
+            KafkaService kafkaService) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
+        this.kafkaService = kafkaService;
     }
 
     @Log
@@ -47,6 +51,7 @@ public class AuthController {
                 .password(req.password())
                 .role(req.role())
                 .build());
+        kafkaService.sendAccountCreatedEventAsync(user);
         return RegistrationResponse.of(user);
     }
 
@@ -108,10 +113,10 @@ public class AuthController {
         return ChangeRoleResponse.of(user);
     }
 
-    public record RegistrationRequest(String login, String password, AuthUser.Role role) {
+    public record RegistrationRequest(String login, String password, Role role) {
     }
 
-    public record RegistrationResponse(long id, String login, AuthUser.Role role, Instant createdAt) {
+    public record RegistrationResponse(long id, String login, Role role, Instant createdAt) {
         public static RegistrationResponse of(AuthUser u) {
             return new RegistrationResponse(u.getId(), u.getLogin(), u.getRole(), u.getCreatedAt());
         }
@@ -123,10 +128,10 @@ public class AuthController {
     public record LoginResponse(String token) {
     }
 
-    public record ChangeRoleRequest(AuthUser.Role role) {
+    public record ChangeRoleRequest(Role role) {
     }
 
-    public record ChangeRoleResponse(long id, String login, AuthUser.Role role, Instant createdAt) {
+    public record ChangeRoleResponse(long id, String login, Role role, Instant createdAt) {
         public static ChangeRoleResponse of(AuthUser u) {
             return new ChangeRoleResponse(u.getId(), u.getLogin(), u.getRole(), u.getCreatedAt());
         }

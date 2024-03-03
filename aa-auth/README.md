@@ -27,3 +27,15 @@ http GET :8080/api/v1/auth/verify -A bearer -a ${TOKEN}
 ```bash
 http POST :8080/api/v1/auth/logout -A bearer -a ${TOKEN}
 ```
+
+## Kafka usage
+
+**Connect to `auth.accounts` topic**
+```bash
+SERVER=localhost:9092
+${KAFKA_HOME}/bin/kafka-console-consumer.sh \
+    --bootstrap-server ${SERVER} \
+    --topic auth.accounts \
+    --group group-alpha \
+    --from-beginning
+```
