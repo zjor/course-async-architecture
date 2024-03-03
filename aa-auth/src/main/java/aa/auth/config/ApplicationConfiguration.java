@@ -2,8 +2,8 @@ package aa.auth.config;
 
 import aa.auth.ext.spring.auth.AuthFilter;
 import aa.auth.repository.AuthTokenRepository;
-import aa.auth.repository.AuthUserRepository;
 import aa.auth.service.AuthTokenService;
+import aa.common.ext.spring.aop.LoggingAspect;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,10 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationConfiguration {
 
     @Bean
-    public AuthTokenService tokenService(
-            AuthUserRepository userRepository,
-            AuthTokenRepository tokenRepository) {
-        return new AuthTokenService(userRepository, tokenRepository);
+    public AuthTokenService tokenService(AuthTokenRepository tokenRepository) {
+        return new AuthTokenService(tokenRepository);
     }
 
     @Bean
@@ -25,6 +23,11 @@ public class ApplicationConfiguration {
         registrationBean.addUrlPatterns("/api/v1/auth/*");
         registrationBean.setOrder(0);
         return registrationBean;
+    }
+
+    @Bean
+    public LoggingAspect loggingAspect() {
+        return new LoggingAspect();
     }
 
 }

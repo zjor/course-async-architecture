@@ -1,4 +1,4 @@
-package aa.auth.model;
+package aa.common.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;

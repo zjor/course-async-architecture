@@ -1,4 +1,4 @@
-package aa.auth.ext.spring.aop;
+package aa.common.ext.spring.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

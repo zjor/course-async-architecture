@@ -1,5 +1,6 @@
 package aa.auth.model;
 
+import aa.common.model.Born;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

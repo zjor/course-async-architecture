@@ -1,13 +1,12 @@
 package aa.auth.controller;
 
-import aa.auth.ext.spring.aop.Log;
 import aa.auth.ext.spring.auth.AuthFilter;
 import aa.auth.ext.spring.auth.AuthenticatedUser;
 import aa.auth.model.AuthToken;
 import aa.auth.model.AuthUser;
-import aa.auth.repository.AuthTokenRepository;
 import aa.auth.repository.AuthUserRepository;
 import aa.auth.service.AuthTokenService;
+import aa.common.ext.spring.aop.Log;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,16 +29,13 @@ import static aa.auth.config.SwaggerConfiguration.SECURITY_REQUIREMENT_JWT;
 public class AuthController {
 
     private final AuthUserRepository userRepository;
-    private final AuthTokenRepository tokenRepository;
 
     private final AuthTokenService tokenService;
 
     public AuthController(
             AuthUserRepository userRepository,
-            AuthTokenRepository tokenRepository,
             AuthTokenService tokenService) {
         this.userRepository = userRepository;
-        this.tokenRepository = tokenRepository;
         this.tokenService = tokenService;
     }
 

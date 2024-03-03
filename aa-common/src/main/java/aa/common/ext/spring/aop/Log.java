@@ -1,4 +1,4 @@
-package aa.auth.ext.spring.aop;
+package aa.common.ext.spring.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
