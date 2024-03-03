@@ -18,4 +18,12 @@ public class JSON {
             throw new RuntimeException(e);
         }
     }
+
+    public static <T> T fromJson(String json, Class<T> clazz) {
+        try {
+            return mapper.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

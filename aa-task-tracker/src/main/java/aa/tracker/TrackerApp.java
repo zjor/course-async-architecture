@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class TrackerApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(TrackerApp.class, args);
+        var ctx = SpringApplication.run(TrackerApp.class, args);
+        var kafka = ctx.getBean(KafkaConsumerService.class);
+        kafka.start();
     }
 
 }
