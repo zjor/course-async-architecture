@@ -8,25 +8,23 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 @Transactional
 public interface AuthTokenRepository extends CrudRepository<AuthToken, Long> {
 
+    Optional<AuthToken> findByToken(String token);
+
     @Query("""
             SELECT t 
-            FROM AuthToken t, AuthUser u 
+            FROM AuthToken t 
             WHERE 
-                t.user = u AND 
-                t.expiredAt IS NULL 
-            ORDER BY t.createdAt 
-            LIMIT 1""")
-    Optional<AuthToken> findActive(AuthUser user);
-
-    default void expire(AuthToken t) {
-        t.setExpiredAt(Instant.now());
-        save(t);
-    }
+                t.user = :user AND
+                t.expiredAt > :now 
+            ORDER BY t.createdAt
+            """)
+    List<AuthToken> findAllActive(AuthUser user, Instant now);
 
 }

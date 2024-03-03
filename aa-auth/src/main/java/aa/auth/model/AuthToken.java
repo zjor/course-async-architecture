@@ -24,10 +24,10 @@ public class AuthToken extends Born {
     @JoinColumn(name = "user_id", nullable = false)
     private AuthUser user;
 
-    @Column(name = "token", nullable = false, length = 4096)
+    @Column(name = "token", unique = true, nullable = false, length = 4096)
     private String token;
 
-    @Column(name = "expired_at")
+    @Column(name = "expired_at", nullable = false)
     private Instant expiredAt;
 
 }

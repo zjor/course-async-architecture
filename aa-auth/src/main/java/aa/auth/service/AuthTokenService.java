@@ -15,21 +15,24 @@ import javax.crypto.SecretKey;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @Slf4j
-public class TokenService {
+public class AuthTokenService {
 
     private final AuthUserRepository userRepository;
     private final AuthTokenRepository tokenRepository;
 
     private final SecretKey key;
 
-    public TokenService(
+    public AuthTokenService(
             AuthUserRepository userRepository,
             AuthTokenRepository tokenRepository) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
-        var in = TokenService.class.getClassLoader().getResourceAsStream("signing.key");
+        var in = AuthTokenService.class.getClassLoader().getResourceAsStream("signing.key");
         try (var r = new BufferedReader(new InputStreamReader(in))) {
             key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(r.readLine()));
         } catch (IOException e) {
@@ -40,20 +43,28 @@ public class TokenService {
 
     public AuthToken issueToken(AuthUser user) {
         var token = Jwts.builder()
-                .subject(user.getLogin()).claim("role", user.getRole())
+                .subject(user.getLogin())
+                .issuedAt(new Date())
+                .claim("role", user.getRole())
                 .signWith(key).compact();
         return tokenRepository.save(AuthToken.builder()
                         .user(user)
                         .token(token)
+                        .expiredAt(Instant.now().plus(1, ChronoUnit.HOURS))
                 .build());
     }
 
     public void expireAll(AuthUser user) {
-
+        var now = Instant.now();
+        tokenRepository.findAllActive(user, now).forEach(t -> {
+            t.setExpiredAt(now);
+            tokenRepository.save(t);
+        });
     }
 
     public Jws<Claims> verify(AuthToken token) {
-        return null;
+        return Jwts.parser().verifyWith(key).build()
+                .parseSignedClaims(token.getToken());
     }
 
 }
