@@ -14,4 +14,6 @@ public interface TaskRepository extends CrudRepository<Task, Long> {
 
     List<Task> findAllByAssigneeOrderByCreatedAtDesc(Account assignee);
 
+    List<Task> findByDoneOrderByCreatedAtDesc(boolean done);
+
 }

@@ -26,3 +26,7 @@
 - BE task assigned (log balance reduction)
 - BE report ready
 - BE task done paid
+
+### References
+
+- [Kafka all in one](https://github.com/confluentinc/cp-all-in-one/)

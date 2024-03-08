@@ -28,8 +28,11 @@ public class Task extends Born {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "price", nullable = false)
-    private BigDecimal price;
+    @Column(name = "reward", nullable = false)
+    private BigDecimal reward;
+
+    @Column(name = "assignment_fee", nullable = false)
+    private BigDecimal assignmentFee;
 
     @Column(name = "is_done", nullable = false)
     private boolean done = false;

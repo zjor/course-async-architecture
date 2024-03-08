@@ -5,6 +5,7 @@ import aa.tracker.KafkaConsumerService;
 import aa.tracker.auth.AuthFilter;
 import aa.tracker.auth.AuthServerClient;
 import aa.tracker.repository.AccountRepository;
+import aa.tracker.service.TaskAssignmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,11 @@ public class ApplicationConfiguration {
     @Bean
     public AuthServerClient authServerClient(@Value("${auth.baseUrl}") String baseUrl) {
         return new AuthServerClient(baseUrl);
+    }
+
+    @Bean
+    public TaskAssignmentService taskAssignmentService(AccountRepository accountRepository) {
+        return new TaskAssignmentService(accountRepository);
     }
 
     @Bean
