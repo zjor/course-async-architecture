@@ -1,5 +1,6 @@
-package aa.common.events.auth;
+package aa.common.events.auth.v1;
 
+import aa.common.events.auth.EventType;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

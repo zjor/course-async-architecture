@@ -1,6 +1,6 @@
 package aa.tracker;
 
-import aa.common.events.auth.AccountCreated;
+import aa.common.events.auth.v1.AccountCreated;
 import aa.common.events.auth.EventType;
 import aa.common.util.JSON;
 import aa.tracker.repository.AccountRepository;

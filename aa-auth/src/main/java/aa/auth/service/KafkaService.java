@@ -1,9 +1,9 @@
 package aa.auth.service;
 
 import aa.auth.model.AuthUser;
-import aa.common.events.auth.AccountCreated;
-import aa.common.events.auth.AccountDeleted;
-import aa.common.events.auth.AccountRoleChanged;
+import aa.common.events.auth.v1.AccountCreated;
+import aa.common.events.auth.v1.AccountDeleted;
+import aa.common.events.auth.v1.AccountRoleChanged;
 import aa.common.util.JSON;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
