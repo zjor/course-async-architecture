@@ -1,6 +1,6 @@
 package aa.common.events.auth.v1;
 
-import aa.common.events.auth.EventType;
+import aa.common.events.Event;
 import aa.common.model.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -17,10 +18,6 @@ import java.time.Instant;
 public class AccountCreated {
 
     public static final String SCHEMA = "auth/v1/account_created";
-
-    @Builder.Default
-    @JsonProperty("type")
-    private EventType type = EventType.ACCOUNT_CREATED;
 
     @JsonProperty("id")
     private long id;
@@ -33,5 +30,15 @@ public class AccountCreated {
 
     @JsonProperty("created_at")
     private Instant createdAt;
+
+    public Event<AccountCreated> toEvent() {
+        return Event.<AccountCreated>builder()
+                .id(UUID.randomUUID().toString())
+                .name("account_created")
+                .version(1)
+                .producer("auth")
+                .data(this)
+                .build();
+    }
 
 }

@@ -1,6 +1,7 @@
 package aa.auth.service;
 
 import aa.auth.model.AuthUser;
+import aa.common.events.Event;
 import aa.common.events.auth.v1.AccountCreated;
 import aa.common.events.auth.v1.AccountDeleted;
 import aa.common.events.auth.v1.AccountRoleChanged;
@@ -42,35 +43,35 @@ public class KafkaService {
         });
     }
 
-    private void sendAsync(Object obj) {
+    private void sendAsync(Event<?> obj) {
         executor.submit(() ->
                 producer.send(new ProducerRecord(topic, JSON.toJson(obj))));
     }
 
     public void sendAccountCreatedEventAsync(AuthUser user) {
-        var event = AccountCreated.builder()
+        var data = AccountCreated.builder()
                 .id(user.getId())
                 .login(user.getLogin())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .build();
-        sendAsync(event);
+        sendAsync(data.toEvent());
     }
 
     public void sendAccountDeletedEventAsync(AuthUser user) {
-        var event = AccountDeleted.builder()
+        var data = AccountDeleted.builder()
                 .id(user.getId())
                 .deletedAt(user.getDeletedAt())
                 .build();
-        sendAsync(event);
+        sendAsync(data.toEvent());
     }
 
     public void setAccountRoleChangedEventAsync(AuthUser user) {
-        var event = AccountRoleChanged.builder()
+        var data = AccountRoleChanged.builder()
                 .id(user.getId())
                 .role(user.getRole())
                 .build();
-        sendAsync(event);
+        sendAsync(data.toEvent());
     }
 
 }

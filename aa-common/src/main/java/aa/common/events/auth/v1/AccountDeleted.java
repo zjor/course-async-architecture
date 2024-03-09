@@ -1,6 +1,6 @@
 package aa.common.events.auth.v1;
 
-import aa.common.events.auth.EventType;
+import aa.common.events.Event;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -15,13 +16,22 @@ import java.time.Instant;
 @AllArgsConstructor
 public class AccountDeleted {
 
-    @Builder.Default
-    @JsonProperty("type")
-    private EventType type = EventType.ACCOUNT_DELETED;
+    public static final String SCHEMA = "auth/v1/account_deleted";
 
     @JsonProperty("id")
     private long id;
 
     @JsonProperty("deleted_at")
     private Instant deletedAt;
+
+    public Event<AccountDeleted> toEvent() {
+        return Event.<AccountDeleted>builder()
+                .id(UUID.randomUUID().toString())
+                .name("account_deleted")
+                .version(1)
+                .producer("auth")
+                .data(this)
+                .build();
+    }
+
 }
