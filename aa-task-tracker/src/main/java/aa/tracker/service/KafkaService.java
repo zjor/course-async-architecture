@@ -1,7 +1,10 @@
 package aa.tracker.service;
 
 import aa.common.events.Event;
+import aa.common.events.tasks.v1.TaskAssigned;
+import aa.common.events.tasks.v1.TaskCompleted;
 import aa.common.util.JSON;
+import aa.tracker.model.Task;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -15,14 +18,14 @@ import java.util.concurrent.Executors;
 
 public class KafkaService {
 
-    private final String topic;
+    public static final String TASK_TOPIC = "tasks.tasks";
+
     private final AdminClient admin;
     private final KafkaProducer producer;
 
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
 
-    public KafkaService(String bootstrapServers, String topic) {
-        this.topic = topic;
+    public KafkaService(String bootstrapServers) {
         Properties config = new Properties();
         config.put("key.serializer", StringSerializer.class);
         config.put("value.serializer", StringSerializer.class);
@@ -35,21 +38,31 @@ public class KafkaService {
 
     public void ensureTopicAsync() {
         executor.submit(() -> {
-            admin.createTopics(List.of(new NewTopic(topic, 1, (short) 1)));
+            admin.createTopics(List.of(new NewTopic(TASK_TOPIC, 1, (short) 1)));
         });
     }
 
     private void sendAsync(Event<?> obj) {
         executor.submit(() ->
-                producer.send(new ProducerRecord(topic, JSON.toJson(obj))));
+                producer.send(new ProducerRecord(TASK_TOPIC, JSON.toJson(obj))));
     }
 
-    public void setTaskAssignedEventAsync() {
-        //TODO: impl
+    public void sendTaskAssignedEventAsync(Task task) {
+        var data = TaskAssigned.builder()
+                .taskId(task.getId())
+                .assigneeId(task.getAssignee().getExtId())
+                .assignmentFee(task.getAssignmentFee())
+                .build();
+        sendAsync(data.toEvent());
     }
 
-    public void setTaskCompletedEventAsync() {
-        // TODO: impl
+    public void sendTaskCompletedEventAsync(Task task) {
+        var data = TaskCompleted.builder()
+                .taskId(task.getId())
+                .assigneeId(task.getAssignee().getExtId())
+                .reward(task.getReward())
+                .build();
+        sendAsync(data.toEvent());
     }
 
 }

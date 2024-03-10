@@ -5,6 +5,7 @@ import aa.tracker.KafkaConsumerService;
 import aa.tracker.auth.AuthFilter;
 import aa.tracker.auth.AuthServerClient;
 import aa.tracker.repository.AccountRepository;
+import aa.tracker.service.KafkaService;
 import aa.tracker.service.TaskAssignmentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -59,5 +60,12 @@ public class ApplicationConfiguration {
             AccountRepository accountRepository) {
         return new KafkaConsumerService(servers, groupId, topic, accountRepository);
     }
+
+    @Bean
+    public KafkaService kafkaService(
+            @Value("${kafka.servers}") String servers) {
+        return new KafkaService(servers);
+    }
+
 
 }
