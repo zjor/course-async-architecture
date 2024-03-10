@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -22,7 +21,7 @@ public class AccountDeleted {
     private long id;
 
     @JsonProperty("deleted_at")
-    private Instant deletedAt;
+    private long deletedAt;
 
     public Event<AccountDeleted> toEvent() {
         return Event.<AccountDeleted>builder()

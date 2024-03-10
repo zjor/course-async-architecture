@@ -16,7 +16,7 @@
       "type": "string"
     },
     "created_at": {
-      "type": "string"
+      "type": "integer"
     }
   },
   "required": ["id", "login", "role", "created_at"]

@@ -53,7 +53,7 @@ public class KafkaService {
                 .id(user.getId())
                 .login(user.getLogin())
                 .role(user.getRole())
-                .createdAt(user.getCreatedAt())
+                .createdAt(user.getCreatedAt().toEpochMilli())
                 .build();
         sendAsync(data.toEvent());
     }
@@ -61,7 +61,7 @@ public class KafkaService {
     public void sendAccountDeletedEventAsync(AuthUser user) {
         var data = AccountDeleted.builder()
                 .id(user.getId())
-                .deletedAt(user.getDeletedAt())
+                .deletedAt(user.getDeletedAt().toEpochMilli())
                 .build();
         sendAsync(data.toEvent());
     }

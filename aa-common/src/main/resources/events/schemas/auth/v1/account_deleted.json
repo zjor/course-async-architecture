@@ -10,7 +10,7 @@
       "type": "integer"
     },
     "deleted_at": {
-      "type": "string"
+      "type": "integer"
     }
   },
   "required": ["id", "deleted_at"]

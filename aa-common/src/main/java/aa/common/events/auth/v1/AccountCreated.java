@@ -8,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -29,7 +28,7 @@ public class AccountCreated {
     private Role role;
 
     @JsonProperty("created_at")
-    private Instant createdAt;
+    private long createdAt;
 
     public Event<AccountCreated> toEvent() {
         return Event.<AccountCreated>builder()

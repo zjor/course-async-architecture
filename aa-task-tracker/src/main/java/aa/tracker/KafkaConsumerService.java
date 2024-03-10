@@ -3,6 +3,8 @@ package aa.tracker;
 import aa.common.events.Event;
 import aa.common.events.SchemaValidator;
 import aa.common.events.auth.v1.AccountCreated;
+import aa.common.events.auth.v1.AccountDeleted;
+import aa.common.events.auth.v1.AccountRoleChanged;
 import aa.common.util.JSON;
 import aa.tracker.repository.AccountRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -58,17 +60,35 @@ public class KafkaConsumerService {
 
             var event = JSON.fromJson(value, new TypeReference<Event<Map>>() {});
             var schemaKey = event.getSchemaKey();
-            if (AccountCreated.SCHEMA.equals(schemaKey)) {
-                var json = JSON.toJson(event.getData());
-                if (SchemaValidator.isValid(json, AccountCreated.SCHEMA)) {
-                    handleAccountCreatedEvent(JSON.fromJson(json, AccountCreated.class));
-                }
+            var jsonData = JSON.toJson(event.getData());
+
+            switch (schemaKey) {
+                case AccountCreated.SCHEMA -> handleAccountCreatedEvent(jsonData);
+                case AccountDeleted.SCHEMA -> handleAccountDeletedEvent(jsonData);
+                case AccountRoleChanged.SCHEMA -> handleAccountRoleChangedEvent(jsonData);
             }
         }
     }
 
-    private void handleAccountCreatedEvent(AccountCreated event) {
-        accountRepository.ensure(event.getId(), event.getLogin(), event.getRole());
+    private void handleAccountCreatedEvent(String json) {
+        if (SchemaValidator.isValid(json, AccountCreated.SCHEMA)) {
+            var event = JSON.fromJson(json, AccountCreated.class);
+            accountRepository.ensure(event.getId(), event.getLogin(), event.getRole());
+        }
+    }
+
+    private void handleAccountDeletedEvent(String json) {
+        if (SchemaValidator.isValid(json, AccountDeleted.SCHEMA)) {
+            var event = JSON.fromJson(json, AccountDeleted.class);
+            accountRepository.setDeletedAt(event.getId(), event.getDeletedAt());
+        }
+    }
+
+    private void handleAccountRoleChangedEvent(String json) {
+        if (SchemaValidator.isValid(json, AccountRoleChanged.SCHEMA)) {
+            var event = JSON.fromJson(json, AccountRoleChanged.class);
+            accountRepository.setRole(event.getId(), event.getRole());
+        }
     }
 
 }
