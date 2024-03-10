@@ -17,6 +17,7 @@
 
     <modules>
         <module>aa-auth</module>
+        <module>aa-billing</module>
         <module>aa-common</module>
         <module>aa-task-tracker</module>
     </modules>

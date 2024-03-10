@@ -3,6 +3,8 @@ package aa.common.events;
 import aa.common.events.auth.v1.AccountCreated;
 import aa.common.events.auth.v1.AccountDeleted;
 import aa.common.events.auth.v1.AccountRoleChanged;
+import aa.common.events.tasks.v1.TaskAssigned;
+import aa.common.events.tasks.v1.TaskCompleted;
 import lombok.extern.slf4j.Slf4j;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
@@ -26,6 +28,8 @@ public class SchemaValidator {
         schemaRegistry.put(AccountRoleChanged.SCHEMA, load(AccountRoleChanged.SCHEMA));
         schemaRegistry.put(AccountDeleted.SCHEMA, load(AccountDeleted.SCHEMA));
 
+        schemaRegistry.put(TaskAssigned.SCHEMA, load(TaskAssigned.SCHEMA));
+        schemaRegistry.put(TaskCompleted.SCHEMA, load(TaskCompleted.SCHEMA));
     }
 
     private static Schema load(String key) {
@@ -41,6 +45,7 @@ public class SchemaValidator {
     public static boolean isValid(String json, String schemaKey) {
         var validator = schemaRegistry.get(schemaKey);
         if (validator == null) {
+            log.warn("No schema for the key: {}", schemaKey);
             return false;
         }
         try {
