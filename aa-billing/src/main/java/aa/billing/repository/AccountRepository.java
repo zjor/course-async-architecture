@@ -1,7 +1,7 @@
-package aa.tracker.repository;
+package aa.billing.repository;
 
+import aa.billing.model.Account;
 import aa.common.model.Role;
-import aa.tracker.model.Account;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +20,6 @@ public interface AccountRepository extends CrudRepository<Account, Long> {
         if (found.isEmpty()) {
             return save(Account.builder()
                     .extId(extId)
-                    .login(login)
                     .role(role)
                     .build());
         } else {

@@ -6,6 +6,7 @@ import aa.tracker.auth.AuthenticatedUser;
 import aa.tracker.model.Account;
 import aa.tracker.model.Task;
 import aa.tracker.repository.TaskRepository;
+import aa.tracker.service.KafkaService;
 import aa.tracker.service.TaskAssignmentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -34,13 +35,16 @@ public class TaskController {
 
     private final TaskAssignmentService assignmentService;
     private final TaskRepository taskRepository;
+    private final KafkaService kafkaService;
     private final Random random;
 
     public TaskController(
             TaskAssignmentService assignmentService,
-            TaskRepository taskRepository) {
+            TaskRepository taskRepository,
+            KafkaService kafkaService) {
         this.assignmentService = assignmentService;
         this.taskRepository = taskRepository;
+        this.kafkaService = kafkaService;
         random = new Random(42);
     }
 
@@ -55,7 +59,7 @@ public class TaskController {
                 .reward(BigDecimal.valueOf(random.nextDouble(20, 40)))
                 .assignmentFee(BigDecimal.valueOf(random.nextDouble(10, 20)))
                 .build());
-        //TODO: send event to deduct assignmentFee
+        kafkaService.sendTaskAssignedEventAsync(task);
         return TaskDTO.of(task);
     }
 
@@ -79,7 +83,7 @@ public class TaskController {
                             .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No suitable assignees"));
                     task.setAssignee(assignee);
                     taskRepository.save(task);
-                    //TODO: send event to deduct assignmentFee
+                    kafkaService.sendTaskAssignedEventAsync(task);
                 });
 
     }
@@ -95,7 +99,7 @@ public class TaskController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not an assignee");
         }
         task.setDone(req.status());
-        //TODO: send event to accrue rewards
+        kafkaService.sendTaskCompletedEventAsync(task);
         return TaskDTO.of(taskRepository.save(task));
     }
 

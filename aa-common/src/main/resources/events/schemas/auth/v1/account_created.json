@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/zjor/course-async-architecture/auth/v1/account_created.json",
+  "title": "AccountCreated",
+  "description": "AccountCreated event schema definition",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Account ID in the originating system",
+      "type": "integer"
+    },
+    "login": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "integer"
+    }
+  },
+  "required": ["id", "login", "role", "created_at"]
+}

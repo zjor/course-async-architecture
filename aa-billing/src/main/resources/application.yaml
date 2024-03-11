@@ -1,0 +1,24 @@
+server:
+  port: 7002
+  error:
+    include-message: always
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/aa
+    username: aa
+    password: s3cr3t
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+      format_sql: false
+    show-sql: false
+
+auth:
+  baseUrl: http://localhost:8080
+
+kafka:
+  servers: localhost:9092
+  topics: auth.accounts, tasks.tasks
+  groupId: billing

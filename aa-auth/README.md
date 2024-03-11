@@ -28,6 +28,11 @@ http GET :8080/api/v1/auth/verify -A bearer -a ${TOKEN}
 http POST :8080/api/v1/auth/logout -A bearer -a ${TOKEN}
 ```
 
+**Delete account**
+```bash
+http DELETE :8080/api/v1/auth/delete -A bearer -a ${TOKEN}
+```
+
 ## Kafka usage
 
 **Connect to `auth.accounts` topic**

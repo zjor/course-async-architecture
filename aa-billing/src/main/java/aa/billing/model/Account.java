@@ -1,4 +1,4 @@
-package aa.tracker.model;
+package aa.billing.model;
 
 import aa.common.model.Born;
 import aa.common.model.Role;
@@ -19,14 +19,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "tm_accounts")
+@Table(name = "billing_accounts")
 public class Account extends Born {
 
     @Column(name = "ext_id", unique = true, nullable = false)
     private long extId;
-
-    @Column(name = "login", unique = true, nullable = false)
-    private String login;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

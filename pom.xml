@@ -17,6 +17,7 @@
 
     <modules>
         <module>aa-auth</module>
+        <module>aa-billing</module>
         <module>aa-common</module>
         <module>aa-task-tracker</module>
     </modules>
@@ -48,6 +49,12 @@
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
                 <version>${kafka.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.erosb</groupId>
+                <artifactId>everit-json-schema</artifactId>
+                <version>1.14.4</version>
             </dependency>
 
         </dependencies>
