@@ -3,8 +3,9 @@ package aa.common.events;
 import aa.common.events.auth.v1.AccountCreated;
 import aa.common.events.auth.v1.AccountDeleted;
 import aa.common.events.auth.v1.AccountRoleChanged;
-import aa.common.events.tasks.v1.TaskAssigned;
+import aa.common.events.tasks.v1.TaskAssignedV1;
 import aa.common.events.tasks.v1.TaskCompleted;
+import aa.common.events.tasks.v2.TaskAssignedV2;
 import lombok.extern.slf4j.Slf4j;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
@@ -28,8 +29,11 @@ public class SchemaValidator {
         schemaRegistry.put(AccountRoleChanged.SCHEMA, load(AccountRoleChanged.SCHEMA));
         schemaRegistry.put(AccountDeleted.SCHEMA, load(AccountDeleted.SCHEMA));
 
-        schemaRegistry.put(TaskAssigned.SCHEMA, load(TaskAssigned.SCHEMA));
+        schemaRegistry.put(TaskAssignedV1.SCHEMA, load(TaskAssignedV1.SCHEMA));
         schemaRegistry.put(TaskCompleted.SCHEMA, load(TaskCompleted.SCHEMA));
+
+        schemaRegistry.put(TaskAssignedV2.SCHEMA, load(TaskAssignedV2.SCHEMA));
+
     }
 
     private static Schema load(String key) {
