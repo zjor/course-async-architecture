@@ -10,6 +10,7 @@ import aa.tracker.service.KafkaService;
 import aa.tracker.service.TaskAssignmentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,13 +49,25 @@ public class TaskController {
         random = new Random(42);
     }
 
+    private static void validate(CreateTaskRequest req) {
+        if (StringUtils.isEmpty(req.title())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title is empty");
+        }
+        if (req.title().contains("[") || req.title().contains("]")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title should not contain [, ]");
+        }
+    }
+
     @Log
     @PostMapping("create")
     public TaskDTO create(@AuthenticatedUser Account account, @RequestBody CreateTaskRequest req) {
+        validate(req);
         var assignee = assignmentService.getAssignee()
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No suitable assignees"));
         var task = taskRepository.save(Task.builder()
                 .assignee(assignee)
+                .jiraId(req.jiraId())
+                .title(req.title())
                 .description(req.description())
                 .reward(BigDecimal.valueOf(random.nextDouble(20, 40)))
                 .assignmentFee(BigDecimal.valueOf(random.nextDouble(10, 20)))
@@ -103,7 +116,7 @@ public class TaskController {
         return TaskDTO.of(taskRepository.save(task));
     }
 
-    public record CreateTaskRequest(String description) {
+    public record CreateTaskRequest(String jiraId, String title, String description) {
     }
 
     public record TaskDTO(long id, Account assignee, String description, BigDecimal reward,

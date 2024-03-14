@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/zjor/course-async-architecture/tasks/v2/task_assigned.json",
+  "title": "TaskAssigned",
+  "description": "TaskAssigned event schema definition",
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "integer"
+    },
+    "jira_id": {
+      "type": "string"
+    },
+    "assignee_id": {
+      "type": "integer"
+    },
+    "assignment_fee": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "task_id",
+    "jira_id",
+    "assignee_id",
+    "assignment_fee"
+  ]
+}

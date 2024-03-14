@@ -8,8 +8,9 @@ import aa.common.events.SchemaValidator;
 import aa.common.events.auth.v1.AccountCreated;
 import aa.common.events.auth.v1.AccountDeleted;
 import aa.common.events.auth.v1.AccountRoleChanged;
-import aa.common.events.tasks.v1.TaskAssigned;
+import aa.common.events.tasks.v1.TaskAssignedV1;
 import aa.common.events.tasks.v1.TaskCompleted;
+import aa.common.events.tasks.v2.TaskAssignedV2;
 import aa.common.util.JSON;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.extern.slf4j.Slf4j;
@@ -78,7 +79,8 @@ public class KafkaConsumerService {
                     case AccountCreated.SCHEMA -> handleAccountCreatedEvent(jsonData);
                     case AccountDeleted.SCHEMA -> handleAccountDeletedEvent(jsonData);
                     case AccountRoleChanged.SCHEMA -> handleAccountRoleChangedEvent(jsonData);
-                    case TaskAssigned.SCHEMA -> handleTaskAssignedEvent(jsonData);
+                    case TaskAssignedV1.SCHEMA -> handleTaskAssignedV1Event(jsonData);
+                    case TaskAssignedV2.SCHEMA -> handleTaskAssignedV2Event(jsonData);
                     case TaskCompleted.SCHEMA -> handleTaskCompletedEvent(jsonData);
                 }
             } catch (Exception e) {
@@ -108,9 +110,16 @@ public class KafkaConsumerService {
         }
     }
 
-    private void handleTaskAssignedEvent(String json) {
-        if (SchemaValidator.isValid(json, TaskAssigned.SCHEMA)) {
-            var event = JSON.fromJson(json, TaskAssigned.class);
+    private void handleTaskAssignedV1Event(String json) {
+        if (SchemaValidator.isValid(json, TaskAssignedV1.SCHEMA)) {
+            var event = JSON.fromJson(json, TaskAssignedV1.class);
+            billingService.handleTaskAssigned(event.getAssigneeId(), event.getAssignmentFee(), event.getTaskId());
+        }
+    }
+
+    private void handleTaskAssignedV2Event(String json) {
+        if (SchemaValidator.isValid(json, TaskAssignedV2.SCHEMA)) {
+            var event = JSON.fromJson(json, TaskAssignedV2.class);
             billingService.handleTaskAssigned(event.getAssigneeId(), event.getAssignmentFee(), event.getTaskId());
         }
     }

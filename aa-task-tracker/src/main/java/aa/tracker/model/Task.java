@@ -25,6 +25,12 @@ public class Task extends Born {
     @JoinColumn(name = "assignee_id", nullable = false)
     private Account assignee;
 
+    @Column(name = "jira_id")
+    private String jiraId;
+
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "description", nullable = false)
     private String description;
 

@@ -1,8 +1,8 @@
 package aa.tracker.service;
 
 import aa.common.events.Event;
-import aa.common.events.tasks.v1.TaskAssigned;
 import aa.common.events.tasks.v1.TaskCompleted;
+import aa.common.events.tasks.v2.TaskAssignedV2;
 import aa.common.util.JSON;
 import aa.tracker.model.Task;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -48,8 +48,9 @@ public class KafkaService {
     }
 
     public void sendTaskAssignedEventAsync(Task task) {
-        var data = TaskAssigned.builder()
+        var data = TaskAssignedV2.builder()
                 .taskId(task.getId())
+                .jiraId(task.getJiraId())
                 .assigneeId(task.getAssignee().getExtId())
                 .assignmentFee(task.getAssignmentFee())
                 .build();
