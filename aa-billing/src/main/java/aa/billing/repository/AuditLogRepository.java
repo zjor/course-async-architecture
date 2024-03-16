@@ -1,5 +1,6 @@
 package aa.billing.repository;
 
+import aa.billing.model.Account;
 import aa.billing.model.AuditLog;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -12,6 +13,8 @@ import java.util.List;
 @Repository
 @Transactional
 public interface AuditLogRepository extends CrudRepository<AuditLog, Long> {
+
+    List<AuditLog> findByAccountOrderByCreatedAtDesc(Account account);
 
     @Query("""
             SELECT a FROM AuditLog a 
