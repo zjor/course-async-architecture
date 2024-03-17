@@ -7,6 +7,7 @@ import aa.billing.repository.BalanceRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 public class BillingService {
 
@@ -53,6 +54,33 @@ public class BillingService {
                 .amount(reward)
                 .reason("Task #" + taskId + " completed")
                 .build());
+    }
+
+    public BigDecimal getEarnings(Instant from, Instant to) {
+        BigDecimal fees = BigDecimal.ZERO;
+        BigDecimal rewards = BigDecimal.ZERO;
+        for (AuditLog l : auditLogRepository.findBetweenTimestamps(from, to)) {
+            if (l.getAmount().compareTo(BigDecimal.ZERO) < 0) {
+                fees = fees.add(l.getAmount().negate());
+            } else {
+                rewards = rewards.add(l.getAmount());
+            }
+        }
+        return fees.subtract(rewards);
+    }
+
+    public BigDecimal getMostExpensiveTask(Instant from, Instant to) {
+        BigDecimal max = BigDecimal.ZERO;
+        for (AuditLog l : auditLogRepository.findBetweenTimestamps(from, to)) {
+            if (l.getAmount().compareTo(max) > 0) {
+                max = l.getAmount();
+            }
+        }
+        return max;
+    }
+
+    public long getNegativeBalancesCount() {
+        return balanceRepository.getNegativeBalancesCount();
     }
 
 }

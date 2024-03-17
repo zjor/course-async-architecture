@@ -1,6 +1,7 @@
 package aa.billing.model;
 
 import aa.common.model.Born;
+import aa.common.model.HasRole;
 import aa.common.model.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +21,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Entity
 @Table(name = "billing_accounts")
-public class Account extends Born {
+public class Account extends Born implements HasRole {
 
     @Column(name = "ext_id", unique = true, nullable = false)
     private long extId;

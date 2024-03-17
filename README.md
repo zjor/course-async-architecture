@@ -1,5 +1,9 @@
 # Async Architecture: UberPopug Inc. aTES
 
+## Assumptions
+
+Billing cycle is 5 minutes for the demonstration purposes
+
 ## Week 1
 
 ### Event Storming Diagram

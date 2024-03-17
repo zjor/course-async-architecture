@@ -1,19 +1,35 @@
 package aa.billing.config;
 
 import aa.billing.KafkaConsumerService;
+import aa.billing.auth.AuthFilter;
 import aa.billing.repository.AccountRepository;
 import aa.billing.repository.AuditLogRepository;
 import aa.billing.repository.BalanceRepository;
+import aa.billing.repository.BillingCycleReportRepository;
 import aa.billing.service.AccountService;
 import aa.billing.service.BillingService;
+import aa.billing.service.PayoutService;
+import aa.common.auth.AuthServerClient;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.List;
 
 @Configuration
+@EnableScheduling
 public class ApplicationConfiguration {
+
+    @Bean
+    public PayoutService payoutService(
+            BillingService billingService,
+            BalanceRepository balanceRepository,
+            AuditLogRepository auditLogRepository,
+            BillingCycleReportRepository billingCycleReportRepository) {
+        return new PayoutService(billingService, balanceRepository, auditLogRepository, billingCycleReportRepository);
+    }
 
     @Bean
     public BillingService billingService(
@@ -37,9 +53,24 @@ public class ApplicationConfiguration {
     @Bean
     public AccountService accountService(
             AccountRepository accountRepository,
-            BalanceRepository balanceRepository
-    ) {
+            BalanceRepository balanceRepository) {
         return new AccountService(accountRepository, balanceRepository);
+    }
+
+    @Bean
+    public AuthServerClient authServerClient(@Value("${auth.baseUrl}") String baseUrl) {
+        return new AuthServerClient(baseUrl);
+    }
+
+    @Bean
+    public FilterRegistrationBean<AuthFilter> authFilterRegistrationBean(
+            AuthServerClient authServerClient,
+            AccountRepository accountRepository) {
+        FilterRegistrationBean<AuthFilter> registrationBean = new FilterRegistrationBean<>();
+        registrationBean.setFilter(new AuthFilter(authServerClient, accountRepository));
+        registrationBean.addUrlPatterns("/api/v1/*");
+        registrationBean.setOrder(0);
+        return registrationBean;
     }
 
 }

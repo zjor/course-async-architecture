@@ -1,23 +1,20 @@
 package aa.billing.repository;
 
-import aa.billing.model.Account;
-import aa.billing.model.Balance;
+import aa.billing.model.BillingCycleReport;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 @Transactional
-public interface BalanceRepository extends CrudRepository<Balance, Long> {
-
-    Optional<Balance> findByAccount(Account account);
+public interface BillingCycleReportRepository extends CrudRepository<BillingCycleReport, Long> {
 
     @Query("""
-            SELECT count(b) FROM Balance b WHERE b.balance < 0
+                    SELECT b FROM BillingCycleReport b ORDER BY b.cycleStart DESC
             """)
-    long getNegativeBalancesCount();
+    List<BillingCycleReport> findAllOrdered();
 
 }
