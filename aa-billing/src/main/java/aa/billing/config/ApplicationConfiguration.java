@@ -4,6 +4,7 @@ import aa.billing.KafkaConsumerService;
 import aa.billing.repository.AccountRepository;
 import aa.billing.repository.AuditLogRepository;
 import aa.billing.repository.BalanceRepository;
+import aa.billing.repository.BillingCycleReportRepository;
 import aa.billing.service.AccountService;
 import aa.billing.service.BillingService;
 import aa.billing.service.PayoutService;
@@ -20,9 +21,11 @@ public class ApplicationConfiguration {
 
     @Bean
     public PayoutService payoutService(
+            BillingService billingService,
             BalanceRepository balanceRepository,
-            AuditLogRepository auditLogRepository) {
-        return new PayoutService(balanceRepository, auditLogRepository);
+            AuditLogRepository auditLogRepository,
+            BillingCycleReportRepository billingCycleReportRepository) {
+        return new PayoutService(billingService, balanceRepository, auditLogRepository, billingCycleReportRepository);
     }
 
     @Bean

@@ -1,6 +1,7 @@
 package aa.billing.controller;
 
 import aa.billing.model.Account;
+import aa.billing.repository.BillingCycleReportRepository;
 import aa.billing.service.BillingService;
 import aa.billing.util.TimeUtil;
 import aa.common.auth.AuthenticatedUser;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static aa.billing.config.SwaggerConfiguration.SECURITY_REQUIREMENT_JWT;
 import static aa.common.auth.AuthValidator.hasRoles;
@@ -26,9 +28,11 @@ import static aa.common.model.Role.ADMIN;
 public class AnalyticsController {
 
     private final BillingService billingService;
+    private final BillingCycleReportRepository billingCycleReportRepository;
 
-    public AnalyticsController(BillingService billingService) {
+    public AnalyticsController(BillingService billingService, BillingCycleReportRepository billingCycleReportRepository) {
         this.billingService = billingService;
+        this.billingCycleReportRepository = billingCycleReportRepository;
     }
 
     @GetMapping
@@ -36,14 +40,14 @@ public class AnalyticsController {
         if (!hasRoles(account, ADMIN)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
-        var billingCycleStart = TimeUtil.floorNowTo(5 * 60L);
+        var billingCycleStart = TimeUtil.getCycleStartFromNow();
         return new GetAnalyticsResponse(
                 billingService.getEarnings(billingCycleStart, Instant.now()),
-                0,
-                List.of()
+                billingService.getNegativeBalancesCount(),
+                billingCycleReportRepository.findAllOrdered()
+                        .stream().map(r -> new MostExpensiveTask(r.getCycleStart(), r.getMostExpensiveTask()))
+                        .collect(Collectors.toList())
         );
-
-
     }
 
     public record MostExpensiveTask(Instant billingPeriod, BigDecimal price) {
@@ -51,7 +55,7 @@ public class AnalyticsController {
 
     public record GetAnalyticsResponse(
             BigDecimal earnedToday,
-            int negativeBalancesCount,
+            long negativeBalancesCount,
             List<MostExpensiveTask> mostExpensiveTasks) {
     }
 

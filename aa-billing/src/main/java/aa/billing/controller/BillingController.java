@@ -4,6 +4,7 @@ import aa.billing.model.Account;
 import aa.billing.model.AuditLog;
 import aa.billing.repository.AuditLogRepository;
 import aa.billing.repository.BalanceRepository;
+import aa.billing.repository.BillingCycleReportRepository;
 import aa.billing.service.BillingService;
 import aa.billing.util.TimeUtil;
 import aa.common.auth.AuthenticatedUser;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static aa.billing.config.SwaggerConfiguration.SECURITY_REQUIREMENT_JWT;
 import static aa.common.auth.AuthValidator.hasRoles;
@@ -33,14 +35,17 @@ public class BillingController {
     private final BillingService billingService;
     private final BalanceRepository balanceRepository;
     private final AuditLogRepository auditLogRepository;
+    private final BillingCycleReportRepository billingCycleReportRepository;
 
     public BillingController(
             BillingService billingService,
             BalanceRepository balanceRepository,
-            AuditLogRepository auditLogRepository) {
+            AuditLogRepository auditLogRepository,
+            BillingCycleReportRepository billingCycleReportRepository) {
         this.billingService = billingService;
         this.balanceRepository = balanceRepository;
         this.auditLogRepository = auditLogRepository;
+        this.billingCycleReportRepository = billingCycleReportRepository;
     }
 
     @RequestMapping("admin/stats")
@@ -49,9 +54,12 @@ public class BillingController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         }
 
-        var billingCycleStart = TimeUtil.floorNowTo(5 * 60L);
+        var billingCycleStart = TimeUtil.getCycleStartFromNow();
         return new GetAdminStatsResponse(
-                billingService.getEarnings(billingCycleStart, Instant.now())
+                billingService.getEarnings(billingCycleStart, Instant.now()),
+                billingCycleReportRepository.findAllOrdered().stream()
+                        .map(r -> new BillingCycleBalance(r.getCycleStart(), r.getBalance()))
+                        .collect(Collectors.toList())
         );
     }
 
@@ -70,7 +78,10 @@ public class BillingController {
         );
     }
 
-    public record GetAdminStatsResponse(BigDecimal earnedToday) {
+    public record BillingCycleBalance(Instant billingPeriod, BigDecimal balance) {
+    }
+
+    public record GetAdminStatsResponse(BigDecimal earnedToday, List<BillingCycleBalance> stats) {
     }
 
     public record GetWorkerStatsResponse(BigDecimal balance, List<AuditLog> operations) {

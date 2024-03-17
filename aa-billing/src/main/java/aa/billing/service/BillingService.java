@@ -69,4 +69,18 @@ public class BillingService {
         return fees.subtract(rewards);
     }
 
+    public BigDecimal getMostExpensiveTask(Instant from, Instant to) {
+        BigDecimal max = BigDecimal.ZERO;
+        for (AuditLog l : auditLogRepository.findBetweenTimestamps(from, to)) {
+            if (l.getAmount().compareTo(max) > 0) {
+                max = l.getAmount();
+            }
+        }
+        return max;
+    }
+
+    public long getNegativeBalancesCount() {
+        return balanceRepository.getNegativeBalancesCount();
+    }
+
 }
