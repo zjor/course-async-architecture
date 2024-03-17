@@ -11,6 +11,7 @@ import aa.common.auth.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -48,7 +49,7 @@ public class BillingController {
         this.billingCycleReportRepository = billingCycleReportRepository;
     }
 
-    @RequestMapping("admin/stats")
+    @GetMapping("admin/stats")
     public GetAdminStatsResponse adminStats(@AuthenticatedUser Account account) {
         if (!hasRoles(account, ADMIN, ACCOUNTANT)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
@@ -63,7 +64,7 @@ public class BillingController {
         );
     }
 
-    @RequestMapping("worker/stats")
+    @GetMapping("worker/stats")
     public GetWorkerStatsResponse workerStats(@AuthenticatedUser Account account) {
         if (!notOneOf(account, ADMIN, MANAGER)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);

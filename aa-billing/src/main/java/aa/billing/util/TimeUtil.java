@@ -16,6 +16,10 @@ public class TimeUtil {
         return floorTo(Instant.now(), intervalSeconds);
     }
 
+    public static Instant getCycleStartFrom(Instant i) {
+        return floorTo(i, FIVE_MINUTES_SECONDS);
+    }
+
     public static Instant getCycleStartFromNow() {
         return floorNowTo(FIVE_MINUTES_SECONDS);
     }

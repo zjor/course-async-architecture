@@ -33,8 +33,9 @@ public class PayoutService {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void payout() {
-        var cycleStart = TimeUtil.getCycleStartFromNow();
-        log.info("Payout started for cycle: {}", cycleStart);
+        var cycleStart = TimeUtil.getCycleStartFrom(Instant.ofEpochMilli(System.currentTimeMillis() - 60_000L));
+        var cycleEnd = TimeUtil.getCycleEnd(cycleStart);
+        log.info("Payout started for cycle: {} - {}", cycleStart, cycleEnd);
         balanceRepository.findAll().forEach(b -> {
             if (b.getBalance().compareTo(BigDecimal.ZERO) > 0) {
                 log.info("Paying to {} amount: {}", b.getAccount().getExtId(), b.getBalance());
@@ -49,12 +50,12 @@ public class PayoutService {
                 //TODO: send PayoutCompleted event
             }
         });
-        storeBillingCycleReport(cycleStart);
+        storeBillingCycleReport(cycleStart, cycleEnd);
     }
 
     // TODO: this should be in a separate analytics service
-    private void storeBillingCycleReport(Instant start) {
-        var end = TimeUtil.getCycleEnd(start);
+    private void storeBillingCycleReport(Instant start, Instant end) {
+
         billingCycleReportRepository.save(
                 new BillingCycleReport(start,
                         billingService.getEarnings(start, end),
